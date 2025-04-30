@@ -4,16 +4,53 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dsw2025Ej8.Domain
+namespace Dsw2025Ej8.Domain;
+public class CuentaCorriente : CuentaBancaria
 {
+    public decimal LimiteDeDescubierto {  get; init; }
+    public decimal Comision {  get; set; }
+    public CuentaCorriente(int numero, decimal saldo ) : base(numero,saldo) { }
 
-
-    public class CuentaCorriente : CuentaBancaria
+    public override void Depositar(decimal monto)
     {
-        public decimal LimiteDeDescubierto {  get; init; }
-        public decimal Comision {  get; set; }
-        public CuentaCorriente(int numero, decimal saldo ) : base(numero,saldo) { }
+        try
+        {
+            if (EstadoCuenta != Estado.Activa)
+            {
+                throw new CuentaNoActiva(EstadoCuenta);
+            }
+
+            if (monto <= 0) throw new MontoNoValido();
+            else
+            {
+                monto -= monto * Comision;
+                Saldo += monto;
+            }
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+
     }
 
+    public override void Retirar(decimal monto)
+    {
+        try
+        {
+            if (EstadoCuenta != Estado.Activa)
+            {
+                throw new CuentaNoActiva(EstadoCuenta);
+            }
 
+            if (Saldo - monto >= LimiteDeDescubierto)
+            {
+                Saldo -= monto;
+            }
+            else 
+            {
+                EstadoCuenta = Estado.Suspendida;
+                throw new SaldoInsuficiente();
+            }
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+
+    }
 }
