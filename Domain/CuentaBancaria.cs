@@ -2,7 +2,7 @@
 
 public class CuentaBancaria
 {
-    public int Numero { get; private set; }
+    public int Numero { get; }
     public decimal Saldo { get; protected set; }
     public Estado EstadoCuenta { get; set; }
     public string[] Titulares { get; init; }
